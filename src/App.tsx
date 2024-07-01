@@ -1,10 +1,10 @@
 
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
-import React, { useEffect, useState } from 'react';
+import { MapContainer, MapContainerProps, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
+import React, { useCallback, useEffect, useState } from 'react';
 import Stop from './classes/Stop';
 import Bus from './classes/Bus';
 import BusStop from './components/BusStop';
-import { Icon, LatLng, LatLngExpression } from 'leaflet';
+import { Icon, LatLng, LatLngExpression, Map} from 'leaflet';
 
 
 // import 'leaflet/dist/leaflet.css';
@@ -40,9 +40,10 @@ const getBusesFromStop = async (stopID:string):Promise<Bus[]>=>{
   const stopRes = await fetch(`https://api.tfl.gov.uk/StopPoint/${stopID}/Arrivals`);
   const arrivalPredictions = await stopRes.json()
   let buses: Bus[] = [];
-  arrivalPredictions.forEach((bus: any) => {
-    buses.push(new Bus(bus.destinationName, bus.lineName, bus.expectedArrival, bus.id));
-  });
+  buses = arrivalPredictions.map((bus:any)=>{
+    return new Bus(bus.destinationName, bus.lineName, bus.expectedArrival, bus.id)
+  })
+
   return buses
 }
 
@@ -67,9 +68,24 @@ async function getStops(postcode: string): Promise<Stop[]> {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 function App(): React.ReactElement {
 
-const icon = new Icon({iconUrl:"https://cdn-icons-png.flaticon.com/512/3448/3448339.png",iconSize:[35,35],iconAnchor:[0,0]})
+
+ // const [map, setMap] = useState<React.ForwardRefExoticComponent<MapContainerProps & React.RefAttributes<LeafletMap>>>(null);
+ // map.setView(center, zoom)
+
+const icon = new Icon({iconUrl:"https://cdn-icons-png.flaticon.com/512/3448/3448339.png",iconSize:[35,35],iconAnchor:[18,35],popupAnchor:[18,35]})
   const [postcode, setPostcode] = useState<string>("");
   const [tableData, setTableData] = useState<Stop[]>([]);
 
@@ -119,7 +135,8 @@ const icon = new Icon({iconUrl:"https://cdn-icons-png.flaticon.com/512/3448/3448
 
 
 <div style={{paddingLeft:"50px",paddingRight:"50px"}}>
-<MapContainer center={[51.505, 0]} zoom={13} style={{ height: '100vh' }}>
+{/* <MapContainer center={[51.505, 0]} zoom={14} ref={setMap}  style={{ height: '100vh' }}> */}
+<MapContainer center={[51.505, 0]} zoom={14}  style={{ height: '100vh' }}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       {tableData.map((stop:Stop)=>
       
