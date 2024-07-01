@@ -10,6 +10,7 @@ import { Icon, LatLng, LatLngExpression, Map} from 'leaflet';
 // import 'leaflet/dist/leaflet.css';
 // import 'leaflet/dist/leaflet.js';
 import "leaflet/dist/leaflet.css";
+import './index.css'
 
 const getLongLatFromPostcode = async (postcode: string): Promise<{ long: number, lat: number }> => {
   const url = new URL(`https://api.postcodes.io/postcodes/${postcode}`)
@@ -102,13 +103,17 @@ const icon = new Icon({iconUrl:"https://cdn-icons-png.flaticon.com/512/3448/3448
   }
 
   return <>
-    <h1> BusBoard </h1>
-    <form action="" onSubmit={formHandler}>
-      <label htmlFor="postcodeInput"> Postcode: </label>
-      <input type="text" id="postcodeInput" onChange={updatePostcode} />
-      <input type="submit" value="Submit" />
-    </form>
-    <div style={{height:"20px"}}></div>
+    <div className='lg:grid lg:grid-cols-3 my-7 mx-16 flex flex-col '>
+      <div className='text-4xl font-bold p-5 backdrop-blur-md w-fit  rounded-md'>
+        <h1> 🏙️🚌Bus-Board </h1>
+      </div>
+      <div>
+        <form action="" onSubmit={formHandler} className='flex'>
+          <input type="text" id="postcodeInput" placeholder='Enter your postcode...' className='p-3 min-w-full' onChange={updatePostcode} />
+          <input type="submit" value="Search" className='bg-slate-800 text-white p-3' />
+        </form>
+      </div>
+    </div>
 {/* 
     {!!tableData[0]&&
 
@@ -134,9 +139,9 @@ const icon = new Icon({iconUrl:"https://cdn-icons-png.flaticon.com/512/3448/3448
     </ol> */}
 
 
-<div style={{paddingLeft:"50px",paddingRight:"50px"}}>
-{/* <MapContainer center={[51.505, 0]} zoom={14} ref={setMap}  style={{ height: '100vh' }}> */}
-<MapContainer center={[51.505, 0]} zoom={14}  style={{ height: '100vh' }}>
+
+<div>
+<MapContainer center={[51.505, 0]} zoom={14} className='map-container'>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       {tableData.map((stop:Stop)=>
       
