@@ -15,6 +15,7 @@ const getLongLatFromPostcode = async (postcode : string) : Promise<{long:number,
 }
 
 const getStopsFromLongLat = async (long :number, lat:number) : Promise<any>=> {
+  // https://api-portal.tfl.gov.uk/api-details#api=StopPoint&operation=StopPoint_GetByGeoPointByQueryLatQueryLonQueryStopTypesQueryRadiusQueryUseSt
   const stopRes = await fetch("https://api.tfl.gov.uk/StopPoint/?lat="+lat+"&lon="+long+"&stopTypes=NaptanPublicBusCoachTram&radius=300");
   if(!stopRes.ok)
   {
@@ -34,6 +35,12 @@ async function getBuses(postcode: string): Promise<any[]> {
     stops.stopPoints.forEach((item:any)=>{
       busStops.push(item);
     })
+
+    for(let i = 0; i < 2; i++){
+      const currentStop = busStops[i].naptanId
+      const stopRes = await fetch(`https://api.tfl.gov.uk/StopPoint/${currentStop}/Arrivals`);
+      const arrivalPredictions = await stopRes.json()
+    }
 
     return busStops;
 }
