@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Stop from './classes/Stop';
 import Bus from './classes/Bus';
 import BusStop from './components/BusStop';
-import { LatLngExpression } from 'leaflet';
+import { Icon, LatLng, LatLngExpression } from 'leaflet';
 
 
 // import 'leaflet/dist/leaflet.css';
@@ -34,28 +34,30 @@ const getStopsFromLongLat = async (long: number, lat: number): Promise<any> => {
 }
 
 
+
+
+const getBusesFromStop = async (stopID:string):Promise<Bus[]>=>{
+  const stopRes = await fetch(`https://api.tfl.gov.uk/StopPoint/${stopID}/Arrivals`);
+  const arrivalPredictions = await stopRes.json()
+  let buses: Bus[] = [];
+  arrivalPredictions.forEach((bus: any) => {
+    buses.push(new Bus(bus.destinationName, bus.lineName, bus.expectedArrival, bus.id));
+  });
+  return buses
+}
+
+
+
 async function getStops(postcode: string): Promise<Stop[]> {
 
-
-  //return [new Stop("ui",9,9,"d","wd",[])]
   const { long, lat } = await getLongLatFromPostcode(postcode);
   const stops = await getStopsFromLongLat(long, lat);
-
   let busStops: Stop[] = [];
 
-  stops.stopPoints.forEach(async (item: any) => {
+  busStops = await Promise.all(stops.stopPoints.map(async (item: any) => {
+   return new Stop(item.naptanId, item.lat, item.lon, item.commonName, "", await getBusesFromStop(item.naptanId))}
+  ))
 
-    const currentStop = item.naptanId
-    const stopRes = await fetch(`https://api.tfl.gov.uk/StopPoint/${currentStop}/Arrivals`);
-    const arrivalPredictions = await stopRes.json()
-    let buses: Bus[] = [];
-    arrivalPredictions.forEach((bus: any) => {
-      buses.push(new Bus(bus.destinationName, bus.lineName, bus.expectedArrival, bus.id));
-    });
-
-    busStops.push(new Stop(item.naptanId, item.lat, item.lon, item.commonName, "", buses))
-
-  })
   // TODO: add in stop code
 
 
@@ -67,7 +69,7 @@ async function getStops(postcode: string): Promise<Stop[]> {
 
 function App(): React.ReactElement {
 
-
+const icon = new Icon({iconUrl:"https://cdn-icons-png.flaticon.com/512/3448/3448339.png",iconSize:[35,35],iconAnchor:[0,0]})
   const [postcode, setPostcode] = useState<string>("");
   const [tableData, setTableData] = useState<Stop[]>([]);
 
@@ -90,7 +92,8 @@ function App(): React.ReactElement {
       <input type="text" id="postcodeInput" onChange={updatePostcode} />
       <input type="submit" value="Submit" />
     </form>
-
+    <div style={{height:"20px"}}></div>
+{/* 
     {!!tableData[0]&&
 
       <div>
@@ -112,14 +115,29 @@ function App(): React.ReactElement {
           <li key={stop.ID}>{stop.name}</li>
         )
       }
-    </ol>
+    </ol> */}
 
 
-
-        <MapContainer center={[1, 1]} zoom={13} style={{ height: '500px' }}>
+<div style={{paddingLeft:"50px",paddingRight:"50px"}}>
+<MapContainer center={[51.505, 0]} zoom={13} style={{ height: '100vh' }}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      {tableData.map((stop:Stop)=>
+      
+      <Marker icon={icon}position={new LatLng(stop.latitude,stop.longitude)}>
+      <Popup>
+      <BusStop stop={stop} />
+      </Popup>
+    </Marker>
+      
+      )}
+     
+
+
     </MapContainer>
     
+
+</div>
+       
 
 
 

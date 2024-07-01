@@ -9,16 +9,11 @@ const BusStop = (prop: Props) => {
   return (
     <>
       <h1>{prop.stop.name}</h1>
-      <div>
-        <b>Stop Names</b>
         <div>
-          <ol>
             {prop.stop.buses.map((bus: Bus) => (
-              <li key={bus.ID}>{bus.destination}</li>
+              <li key={bus.ID}><b>{bus.line}: </b>{bus.destination}   {bus.arrivalTime.toTimeString().split(' ')[0]}</li>
             ))}
-          </ol>
         </div>
-      </div>
     </>
   );
 };
