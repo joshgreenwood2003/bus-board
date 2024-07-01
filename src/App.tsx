@@ -2,6 +2,7 @@ import { tab } from '@testing-library/user-event/dist/tab';
 import React, { useEffect, useState } from 'react';
 import Stop from './classes/Stop';
 import Bus from './classes/Bus';
+import BusStop from './components/BusStop';
 
 const getLongLatFromPostcode = async (postcode: string): Promise<{ long: number, lat: number }> => {
   const url = new URL(`https://api.postcodes.io/postcodes/${postcode}`)
@@ -82,6 +83,21 @@ function App(): React.ReactElement {
       <input type="text" id="postcodeInput" onChange={updatePostcode} />
       <input type="submit" value="Submit" />
     </form>
+
+    {!!tableData[0]&&
+
+      <div>
+        <h1>Bus 1</h1>
+        <BusStop stop={tableData[0]} />
+      </div>
+      }
+    {!!tableData[1]&&
+      <div>
+        <h1>Bus 2</h1>
+        <BusStop stop={tableData[1]} />
+      </div>
+    }
+
     <ol>
 
       {
