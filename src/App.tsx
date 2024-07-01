@@ -1,8 +1,15 @@
-import { tab } from '@testing-library/user-event/dist/tab';
+
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import React, { useEffect, useState } from 'react';
 import Stop from './classes/Stop';
 import Bus from './classes/Bus';
 import BusStop from './components/BusStop';
+import { LatLngExpression } from 'leaflet';
+
+
+// import 'leaflet/dist/leaflet.css';
+// import 'leaflet/dist/leaflet.js';
+import "leaflet/dist/leaflet.css";
 
 const getLongLatFromPostcode = async (postcode: string): Promise<{ long: number, lat: number }> => {
   const url = new URL(`https://api.postcodes.io/postcodes/${postcode}`)
@@ -71,7 +78,7 @@ function App(): React.ReactElement {
     const data = await getStops(postcode);
     setTableData(data);
   }
-
+  const position:LatLngExpression = [51.505, -0.09]
   function updatePostcode(data: React.ChangeEvent<HTMLInputElement>): void {
     setPostcode(data.target.value)
   }
@@ -107,7 +114,17 @@ function App(): React.ReactElement {
       }
     </ol>
 
-  </>;
+
+
+        <MapContainer center={[1, 1]} zoom={13} style={{ height: '500px' }}>
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+    </MapContainer>
+    
+
+
+
+
+    </>;
 }
 
 export default App;
