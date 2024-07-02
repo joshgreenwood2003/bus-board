@@ -10,6 +10,7 @@ import { Icon, LatLng, LatLngExpression, Map } from 'leaflet';
 // import 'leaflet/dist/leaflet.css';
 // import 'leaflet/dist/leaflet.js';
 import "leaflet/dist/leaflet.css";
+import './index.css'
 
 const getLongLatFromPostcode = async (postcode: string): Promise<{ long: number, lat: number }> => {
   const url = new URL(`https://api.postcodes.io/postcodes/${postcode}`)
@@ -142,7 +143,7 @@ function App(): React.ReactElement {
 
 
     
-      <MapContainer center={[51.505, 0]} ref = {setMap} zoom={15} style={{ height: '100vh' }}>
+      <MapContainer className = "map-container" center={[51.505, 0]} ref = {setMap} zoom={15}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       {tableData.map((stop:Stop)=>
       
@@ -157,16 +158,7 @@ function App(): React.ReactElement {
     </MapContainer>
 
 
-      // <MapContainer
-      //   center={center}
-      //   zoom={zoom}
-      //   scrollWheelZoom={false}
-      //   ref={setMap}>
-      //   <TileLayer
-      //     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      //     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      //   />
-      // </MapContainer>
+  
     ),
     [tableData],
   )
@@ -184,26 +176,24 @@ function App(): React.ReactElement {
   }
 
   return <>
-    <h1> BusBoard </h1>
-    <form action="" onSubmit={formHandler}>
-      <label htmlFor="postcodeInput"> Postcode: </label>
-      <input type="text" id="postcodeInput" onChange={updatePostcode} />
-      <input type="submit" value="Submit" />
-    </form>
-    <div style={{ height: "20px" }}></div>
+    <div className='lg:grid lg:grid-cols-3 my-7 mx-16 flex flex-col gap-5'>
+      <div className='text-4xl font-bold p-5 backdrop-blur-md w-fit rounded-md'>
+        <h1> 🏙️🚌Bus-Board </h1>
+      </div>
+      <div>
+        <form action="" onSubmit={formHandler} className='flex w-full'>
+          <input type="text" id="postcodeInput" placeholder='Enter your postcode...' className='p-3 grow' onChange={updatePostcode} />
+          <input type="submit" value="Search" className='bg-slate-800 text-white p-3 hover:bg-slate-600' />
+        </form>
+      </div>
+    </div>
 
 
 
-    <div style={{ paddingLeft: "50px", paddingRight: "50px" }}>
-
-
-
-      {map ? <DisplayPosition map={map} /> : null}
+<div>
+{map ? <DisplayPosition map={map} /> : null}
       {displayMap}
-
-
-
-
+    
 
     </div>
 
