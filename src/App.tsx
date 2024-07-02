@@ -1,11 +1,13 @@
 
 import React, {useMemo, useState } from 'react';
-import Stop from './classes/Stop';
+
+import MapBoxContainer, {ZOOM_DEFAULT_DISTANCE} from './components/MapBoxContainer';
+import { getStops } from './functions/apiStopHandler';
 import { LatLng } from 'leaflet';
+import Stop from './classes/Stop';
+
 import "leaflet/dist/leaflet.css";
 import './index.css'
-import MapBoxContainer from './components/MapBoxContainer';
-import { getStops } from './functions/apiStopHandler';
 
 function App(): React.ReactElement {
   const [map, setMap]: any = useState(null)
@@ -20,12 +22,10 @@ function App(): React.ReactElement {
     [tableData],
   )
 
-  const zoom = 16
-
-  function DisplayPosition({ map,lat,long}: any) {
+  function DisplayPosition({ map,lat,long}: {map:any, lat:number|undefined, long:number|undefined}) {
   if (lat && long){
   
-    map.setView(new LatLng(lat,long), zoom,{
+    map.setView(new LatLng(lat,long), ZOOM_DEFAULT_DISTANCE,{
       animate: true,
     })
   }
@@ -60,7 +60,7 @@ function App(): React.ReactElement {
 
 
 <div>
-    {map ? <DisplayPosition map={map} /> : null}
+    {map ? <DisplayPosition map={map} long={undefined} lat={undefined}/> : null}
       {displayMap}
     </div>
   </>;
