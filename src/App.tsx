@@ -103,14 +103,14 @@ const icon = new Icon({iconUrl:"https://cdn-icons-png.flaticon.com/512/3448/3448
   }
 
   return <>
-    <div className='lg:grid lg:grid-cols-3 my-7 mx-16 flex flex-col '>
-      <div className='text-4xl font-bold p-5 backdrop-blur-md w-fit  rounded-md'>
+    <div className='lg:grid lg:grid-cols-3 my-7 mx-16 flex flex-col gap-5'>
+      <div className='text-4xl font-bold p-5 backdrop-blur-md w-fit rounded-md'>
         <h1> 🏙️🚌Bus-Board </h1>
       </div>
       <div>
-        <form action="" onSubmit={formHandler} className='flex'>
-          <input type="text" id="postcodeInput" placeholder='Enter your postcode...' className='p-3 min-w-full' onChange={updatePostcode} />
-          <input type="submit" value="Search" className='bg-slate-800 text-white p-3' />
+        <form action="" onSubmit={formHandler} className='flex w-full'>
+          <input type="text" id="postcodeInput" placeholder='Enter your postcode...' className='p-3 grow' onChange={updatePostcode} />
+          <input type="submit" value="Search" className='bg-slate-800 text-white p-3 hover:bg-slate-600' />
         </form>
       </div>
     </div>
