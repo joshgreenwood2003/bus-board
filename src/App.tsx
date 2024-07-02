@@ -1,10 +1,10 @@
 
-import { MapContainer, MapContainerProps, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
-import React, { useCallback, useEffect, useState } from 'react';
+import { MapContainer, MapContainerProps, Marker, Popup, TileLayer, useMap, useMapEvent } from 'react-leaflet'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Stop from './classes/Stop';
 import Bus from './classes/Bus';
 import BusStop from './components/BusStop';
-import { Icon, LatLng, LatLngExpression, Map} from 'leaflet';
+import { Icon, LatLng, LatLngExpression, Map } from 'leaflet';
 
 
 // import 'leaflet/dist/leaflet.css';
@@ -36,11 +36,11 @@ const getStopsFromLongLat = async (long: number, lat: number): Promise<any> => {
 
 
 
-const getBusesFromStop = async (stopID:string):Promise<Bus[]>=>{
+const getBusesFromStop = async (stopID: string): Promise<Bus[]> => {
   const stopRes = await fetch(`https://api.tfl.gov.uk/StopPoint/${stopID}/Arrivals`);
   const arrivalPredictions = await stopRes.json()
   let buses: Bus[] = [];
-  buses = arrivalPredictions.map((bus:any)=>{
+  buses = arrivalPredictions.map((bus: any) => {
     return new Bus(bus.destinationName, bus.lineName, bus.expectedArrival, bus.id)
   })
 
@@ -49,29 +49,49 @@ const getBusesFromStop = async (stopID:string):Promise<Bus[]>=>{
 
 
 
-async function getStops(postcode: string): Promise<Stop[]> {
+async function getStops(postcode: string): Promise<[number,number,Stop[]]> {
 
   const { long, lat } = await getLongLatFromPostcode(postcode);
   const stops = await getStopsFromLongLat(long, lat);
   let busStops: Stop[] = [];
 
   busStops = await Promise.all(stops.stopPoints.map(async (item: any) => {
-   return new Stop(item.naptanId, item.lat, item.lon, item.commonName, "", await getBusesFromStop(item.naptanId))}
+    return new Stop(item.naptanId, item.lat, item.lon, item.commonName, "", await getBusesFromStop(item.naptanId))
+  }
   ))
 
   // TODO: add in stop code
 
 
-
-  return busStops;
+  return [lat,long,busStops];
 }
 
 
 
 
+const zoom = 16
 
 
 
+
+
+
+
+
+function DisplayPosition({ map,lat,long}: any) {
+  console.log(lat)
+  console.log(long)
+if (lat && long){
+
+  map.setView(new LatLng(lat,long), zoom,{
+    animate: true,
+  })
+}
+  //const [position, setPosition] = useState(() => map.getCenter())
+
+
+  return (<></>)
+}
 
 
 
@@ -82,61 +102,47 @@ async function getStops(postcode: string): Promise<Stop[]> {
 function App(): React.ReactElement {
 
 
- // const [map, setMap] = useState<React.ForwardRefExoticComponent<MapContainerProps & React.RefAttributes<LeafletMap>>>(null);
- // map.setView(center, zoom)
 
-const icon = new Icon({iconUrl:"https://cdn-icons-png.flaticon.com/512/3448/3448339.png",iconSize:[35,35],iconAnchor:[18,35],popupAnchor:[18,35]})
+
+  const [map, setMap]: any = useState(null)
+
+
+
+
+
+
+
+
+
+
+
+
+  // const [map, setMap] = useState<React.ForwardRefExoticComponent<MapContainerProps & React.RefAttributes<LeafletMap>>>(null);
+  // map.setView(center, zoom)
+
+  const icon = new Icon({ iconUrl: "https://cdn-icons-png.flaticon.com/512/3448/3448339.png", iconSize: [35, 35], iconAnchor: [18, 35], popupAnchor: [18, 35] })
   const [postcode, setPostcode] = useState<string>("");
   const [tableData, setTableData] = useState<Stop[]>([]);
 
 
 
-  async function formHandler(event: React.FormEvent<HTMLFormElement>): Promise<void> {
-    event.preventDefault(); // to stop the form refreshing the page when it submits
-    const data = await getStops(postcode);
-    setTableData(data);
-  }
-  const position:LatLngExpression = [51.505, -0.09]
-  function updatePostcode(data: React.ChangeEvent<HTMLInputElement>): void {
-    setPostcode(data.target.value)
-  }
-
-  return <>
-    <h1> BusBoard </h1>
-    <form action="" onSubmit={formHandler}>
-      <label htmlFor="postcodeInput"> Postcode: </label>
-      <input type="text" id="postcodeInput" onChange={updatePostcode} />
-      <input type="submit" value="Submit" />
-    </form>
-    <div style={{height:"20px"}}></div>
-{/* 
-    {!!tableData[0]&&
-
-      <div>
-        <h1>Bus 1</h1>
-        <BusStop stop={tableData[0]} />
-      </div>
-      }
-    {!!tableData[1]&&
-      <div>
-        <h1>Bus 2</h1>
-        <BusStop stop={tableData[1]} />
-      </div>
-    }
-
-    <ol>
-
-      {
-        tableData.map((stop: Stop) =>
-          <li key={stop.ID}>{stop.name}</li>
-        )
-      }
-    </ol> */}
 
 
-<div style={{paddingLeft:"50px",paddingRight:"50px"}}>
-{/* <MapContainer center={[51.505, 0]} zoom={14} ref={setMap}  style={{ height: '100vh' }}> */}
-<MapContainer center={[51.505, 0]} zoom={14}  style={{ height: '100vh' }}>
+
+
+
+
+
+
+  const displayMap = useMemo(
+    () => (
+
+
+
+
+
+    
+      <MapContainer center={[51.505, 0]} ref = {setMap} zoom={15} style={{ height: '100vh' }}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       {tableData.map((stop:Stop)=>
       
@@ -148,18 +154,64 @@ const icon = new Icon({iconUrl:"https://cdn-icons-png.flaticon.com/512/3448/3448
       
       )}
      
-
-
     </MapContainer>
-    
-
-</div>
-       
 
 
+      // <MapContainer
+      //   center={center}
+      //   zoom={zoom}
+      //   scrollWheelZoom={false}
+      //   ref={setMap}>
+      //   <TileLayer
+      //     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      //     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      //   />
+      // </MapContainer>
+    ),
+    [tableData],
+  )
+
+  async function formHandler(event: React.FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault(); // to stop the form refreshing the page when it submits
+    const [lat,long,data] = await getStops(postcode);
+
+    DisplayPosition({map:map,lat:lat,long:long});
+    setTableData(data);
+
+  }
+  function updatePostcode(data: React.ChangeEvent<HTMLInputElement>): void {
+    setPostcode(data.target.value)
+  }
+
+  return <>
+    <h1> BusBoard </h1>
+    <form action="" onSubmit={formHandler}>
+      <label htmlFor="postcodeInput"> Postcode: </label>
+      <input type="text" id="postcodeInput" onChange={updatePostcode} />
+      <input type="submit" value="Submit" />
+    </form>
+    <div style={{ height: "20px" }}></div>
 
 
-    </>;
+
+    <div style={{ paddingLeft: "50px", paddingRight: "50px" }}>
+
+
+
+      {map ? <DisplayPosition map={map} /> : null}
+      {displayMap}
+
+
+
+
+
+    </div>
+
+
+
+
+
+  </>;
 }
 
 export default App;
