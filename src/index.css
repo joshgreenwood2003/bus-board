@@ -11,6 +11,10 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  a{
+    @apply w-full p-3 bg-slate-600 text-white hover:bg-orange-500 text-center
+  }
 }
 @layer utilities {
   .map-container {
