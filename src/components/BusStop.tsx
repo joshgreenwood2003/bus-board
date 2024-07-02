@@ -2,6 +2,7 @@ import Stop from "../classes/Stop";
 import Bus from "../classes/Bus";
 import { useEffect, useState } from "react";
 import { createHash } from "crypto";
+import { findBusesFromStopId } from "../functions/apiBusFinder";
 interface Props {
   stop: Stop;
 }
@@ -15,22 +16,11 @@ const BusStop = (prop: Props) => {
   const [busData, setBusData] = useState<Bus[]>([]);
 
 
-
-
-
-
-  async function initialiseBusesFromStop( ){
-    const stopResult = await fetch(`https://api.tfl.gov.uk/StopPoint/${prop.stop.ID}/Arrivals`);
-    const arrivalPredictions = await stopResult.json()
-    ////////////////////////////////////////////////////////// CHECK FOR OK REQUEST
-    let buses:Bus[] = arrivalPredictions.map((bus: any) => {
-      return new Bus(bus.destinationName, bus.lineName, bus.expectedArrival, bus.id, bus.timeToStation)
-  })
-  buses.sort((a:Bus,b:Bus)=>{
-    return a.timeToStation - b.timeToStation;
-  })
-    setBusData(buses)
+async function initialiseBusesFromStop(){
+  setBusData( await findBusesFromStopId(prop.stop.ID))
 }
+
+
 
 
 // //initialiseBusesFromStop();
