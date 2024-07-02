@@ -3,6 +3,7 @@ import Bus from "../classes/Bus";
 import { useEffect, useState } from "react";
 import { createHash } from "crypto";
 import { findBusesFromStopId } from "../functions/apiBusFinder";
+import { Link } from "react-router-dom";
 interface Props {
   stop: Stop;
 }
@@ -12,12 +13,13 @@ const BusStop = (prop: Props) => {
   
 
 
-
+  const [loading, setLoading] = useState<boolean>(true);
   const [busData, setBusData] = useState<Bus[]>([]);
 
 
 async function initialiseBusesFromStop(){
   setBusData( await findBusesFromStopId(prop.stop.ID))
+  setLoading(false)
 }
 
 
@@ -50,6 +52,8 @@ async function initialiseBusesFromStop(){
     <div className="flex flex-col gap-5">
       <b className="text-lg">{prop.stop.name}</b>
         <div>
+        {loading? <b>Loading...</b>:<>
+          {(busData.length>0)?
             <table className="table-auto w-full">
               <thead>
                 <tr>
@@ -70,8 +74,16 @@ async function initialiseBusesFromStop(){
               ))}
               </tbody>
             </table>
+          :
+            <b>No incoming busses</b>
+          }
+          </>
+        }
         </div>
-        <button className="w-full p-3 bg-slate-600 text-white hover:bg-orange-500">View More Details</button>
+        { // only display when on home map
+          window.location.pathname === "/" &&
+          <Link className="w-full p-3 bg-slate-600 text-white hover:bg-orange-500 text-center" to={`/BusInfo/${prop.stop.ID}`} style={{color:"white"}}>View More Details</Link>
+  }
     </div>
   );
 };
