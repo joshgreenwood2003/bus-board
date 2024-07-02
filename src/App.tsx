@@ -1,16 +1,11 @@
 
-import { MapContainer, MapContainerProps, Marker, Popup, TileLayer, useMap, useMapEvent } from 'react-leaflet'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {useMemo, useState } from 'react';
 import Stop from './classes/Stop';
 import Bus from './classes/Bus';
-import BusStop from './components/BusStop';
-import { Icon, LatLng, LatLngExpression, Map } from 'leaflet';
-
-
-// import 'leaflet/dist/leaflet.css';
-// import 'leaflet/dist/leaflet.js';
+import { LatLng } from 'leaflet';
 import "leaflet/dist/leaflet.css";
 import './index.css'
+import MapBoxContainer from './components/MapBoxContainer';
 
 const getLongLatFromPostcode = async (postcode: string): Promise<{ long: number, lat: number }> => {
   const url = new URL(`https://api.postcodes.io/postcodes/${postcode}`)
@@ -62,106 +57,35 @@ async function getStops(postcode: string): Promise<[number,number,Stop[]]> {
   ))
 
   // TODO: add in stop code
-
-
   return [lat,long,busStops];
 }
 
-
-
-
-const zoom = 16
-
-
-
-
-
-
-
-
-function DisplayPosition({ map,lat,long}: any) {
-  console.log(lat)
-  console.log(long)
-if (lat && long){
-
-  map.setView(new LatLng(lat,long), zoom,{
-    animate: true,
-  })
-}
-  //const [position, setPosition] = useState(() => map.getCenter())
-
-
-  return (<></>)
-}
-
-
-
-
-
-
-
 function App(): React.ReactElement {
-
-
-
-
   const [map, setMap]: any = useState(null)
-
-
-
-
-
-
-
-
-
-
-
-
-  // const [map, setMap] = useState<React.ForwardRefExoticComponent<MapContainerProps & React.RefAttributes<LeafletMap>>>(null);
-  // map.setView(center, zoom)
-
-  const icon = new Icon({ iconUrl: "https://cdn-icons-png.flaticon.com/512/3448/3448339.png", iconSize: [35, 35], iconAnchor: [18, 35], popupAnchor: [18, 35] })
   const [postcode, setPostcode] = useState<string>("");
   const [tableData, setTableData] = useState<Stop[]>([]);
 
 
-
-
-
-
-
-
-
-
-
   const displayMap = useMemo(
     () => (
-
-
-
-
-
-    
-      <MapContainer className = "map-container" center={[51.505, 0]} ref = {setMap} zoom={15}>
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      {tableData.map((stop:Stop)=>
-      
-      <Marker icon={icon}position={new LatLng(stop.latitude,stop.longitude)}>
-      <Popup>
-      <BusStop stop={stop} />
-      </Popup>
-    </Marker>
-      
-      )}
-     
-    </MapContainer>
-
-
-  
+      <MapBoxContainer setMapRef={setMap} tableData={tableData} />
     ),
     [tableData],
   )
+
+  const zoom = 16
+
+  function DisplayPosition({ map,lat,long}: any) {
+    console.log(lat)
+    console.log(long)
+  if (lat && long){
+  
+    map.setView(new LatLng(lat,long), zoom,{
+      animate: true,
+    })
+  }
+    return (<></>)
+  }
 
   async function formHandler(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault(); // to stop the form refreshing the page when it submits
@@ -191,16 +115,9 @@ function App(): React.ReactElement {
 
 
 <div>
-{map ? <DisplayPosition map={map} /> : null}
+    {map ? <DisplayPosition map={map} /> : null}
       {displayMap}
-    
-
     </div>
-
-
-
-
-
   </>;
 }
 
