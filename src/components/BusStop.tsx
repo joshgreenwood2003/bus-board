@@ -57,14 +57,32 @@ const BusStop = (prop: Props) => {
 
 
   return (
-    <>
-      <h1>{prop.stop.name}</h1>
+    <div className="flex flex-col gap-5">
+      <b className="text-lg">{prop.stop.name}</b>
         <div>
-            {busData.map((bus: Bus) => (
-              <li key={bus.ID}><b>{bus.line}: </b>  {Math.floor(bus.timeToStation/60)}m {bus.timeToStation%60}s</li>
-            ))}
+            <table className="table-auto w-full">
+              <thead>
+                <tr>
+                  <th>Route</th>
+                  <th>ETA</th>
+                </tr>
+              </thead>
+              <tbody>
+              {busData.map((bus: Bus) => (
+                <tr key={bus.ID}>
+                  <td className="p-1.5">
+                    <b className="font-bold max-w-fit px-3 py-1 rounded-md" style={{backgroundColor:`rgb(${bus.color[0]},${bus.color[1]},${bus.color[2]})`}}>
+                      {bus.line}
+                    </b>
+                  </td>
+                  <td>{Math.floor(bus.timeToStation/60)}m {bus.timeToStation%60}s</td>
+                </tr>
+              ))}
+              </tbody>
+            </table>
         </div>
-    </>
+        <button className="w-full p-3 bg-slate-600 text-white hover:bg-orange-500">View More Details</button>
+    </div>
   );
 };
 
