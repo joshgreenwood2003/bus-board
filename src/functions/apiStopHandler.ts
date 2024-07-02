@@ -16,7 +16,7 @@ const getLongLatFromPostcode = async (postcode: string): Promise<{ long: number,
   const getStopsFromLongLat = async (long: number, lat: number): Promise<any> => {
     // Documentation:
     // https://api-portal.tfl.gov.uk/api-details#api=StopPoint&operation=StopPoint_GetByGeoPointByQueryLatQueryLonQueryStopTypesQueryRadiusQueryUseSt
-    const stopResult = await fetch("https://api.tfl.gov.uk/StopPoint/?lat=" + lat + "&lon=" + long + "&stopTypes=NaptanPublicBusCoachTram&radius=300");
+    const stopResult = await fetch("https://api.tfl.gov.uk/StopPoint/?lat=" + lat + "&lon=" + long + "&stopTypes=NaptanPublicBusCoachTram&radius=1000");
     if (!stopResult.ok) {
       throw new Error("Request to api.tfl.gov.uk/StopPoint was not successful!")
     }
@@ -24,17 +24,7 @@ const getLongLatFromPostcode = async (postcode: string): Promise<{ long: number,
     return stopData;
   }
   
-  const getBusesFromStop = async (stopID: string): Promise<Bus[]> => {
-    const stopResult = await fetch(`https://api.tfl.gov.uk/StopPoint/${stopID}/Arrivals`);
-    const arrivalPredictions = await stopResult.json()
-    let buses: Bus[] = [];
-    buses = arrivalPredictions.map((bus: any) => {
-      return new Bus(bus.destinationName, bus.lineName, bus.expectedArrival, bus.id)
-    })
-  
-    return buses
-  }
-  
+
   
   
   export async function getStops(postcode: string): Promise<[number,number,Stop[]]> {
@@ -44,7 +34,7 @@ const getLongLatFromPostcode = async (postcode: string): Promise<{ long: number,
     let busStops: Stop[] = [];
   
     busStops = await Promise.all(stops.stopPoints.map(async (item: any) => {
-      return new Stop(item.naptanId, item.lat, item.lon, item.commonName, "", await getBusesFromStop(item.naptanId))
+      return new Stop(item.naptanId, item.lat, item.lon, item.commonName, "");
     }
     ))
   

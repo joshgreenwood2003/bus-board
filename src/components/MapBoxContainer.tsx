@@ -12,7 +12,7 @@ interface Prop {
 export const ZOOM_DEFAULT_DISTANCE = 16
 
 const BUS_STOP_MAP_MARKER_IMAGE = "https://cdn-icons-png.flaticon.com/512/3448/3448339.png"
-const icon = new Icon({ iconUrl: BUS_STOP_MAP_MARKER_IMAGE, iconSize: [35, 35], iconAnchor: [18, 35], popupAnchor: [18, 35] })
+const icon = new Icon({ iconUrl: BUS_STOP_MAP_MARKER_IMAGE, iconSize: [35, 35], iconAnchor: [18, 35], popupAnchor: [0, -1] })
   
 const MapBoxContainer = (props: Prop) => {
 
