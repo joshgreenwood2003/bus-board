@@ -1,5 +1,5 @@
 
-import React, {useMemo, useState } from 'react';
+import React, {useEffect, useMemo, useState } from 'react';
 
 import MapBoxContainer, {ZOOM_DEFAULT_DISTANCE} from './components/MapBoxContainer';
 import { getStops } from './functions/apiStopHandler';
@@ -13,13 +13,14 @@ function App(): React.ReactElement {
   const [map, setMap]: any = useState(null)
   const [postcode, setPostcode] = useState<string>("");
   const [tableData, setTableData] = useState<Stop[]>([]);
+  const [userLocation,setUserLocation] = useState<GeolocationPosition>();
 
 
   const displayMap = useMemo(
     () => (
-      <MapBoxContainer setMapRef={setMap} tableData={tableData} />
+      <MapBoxContainer setMapRef={setMap} tableData={tableData} userPosition = {userLocation} />
     ),
-    [tableData],
+    [tableData,userLocation],
   )
 
   function DisplayPosition({ map,lat,long}: {map:any, lat:number|undefined, long:number|undefined}) {
@@ -36,6 +37,7 @@ function App(): React.ReactElement {
     event.preventDefault(); // to stop the form refreshing the page when it submits
     const [lat,long,data] = await getStops(postcode);
 
+
     DisplayPosition({map:map,lat:lat,long:long});
     setTableData(data);
 
@@ -44,6 +46,31 @@ function App(): React.ReactElement {
     setPostcode(data.target.value)
   }
 
+
+function displayPosition(pos:GeolocationPosition){
+  setUserLocation(pos);
+
+}
+
+  function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            // Success function
+            displayPosition, 
+            // Error function
+            null, 
+            // Options. See MDN for details.
+            {
+               enableHighAccuracy: true,
+               timeout: 5000,
+               maximumAge: 0
+            });
+    }
+}
+useEffect(()=>{
+getLocation();
+})
+  
   return <>
     <div className='lg:grid lg:grid-cols-3 my-7 mx-16 flex flex-col gap-5'>
       <div className='text-4xl font-bold p-5 backdrop-blur-md w-fit rounded-md'>
