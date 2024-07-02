@@ -9,23 +9,25 @@ interface Prop {
 
 }
 
-const icon = new Icon({ iconUrl: "https://cdn-icons-png.flaticon.com/512/3448/3448339.png", iconSize: [35, 35], iconAnchor: [18, 35], popupAnchor: [18, 35] })
-  
+export const ZOOM_DEFAULT_DISTANCE = 16
 
+const BUS_STOP_MAP_MARKER_IMAGE = "https://cdn-icons-png.flaticon.com/512/3448/3448339.png"
+const icon = new Icon({ iconUrl: BUS_STOP_MAP_MARKER_IMAGE, iconSize: [35, 35], iconAnchor: [18, 35], popupAnchor: [18, 35] })
+  
 const MapBoxContainer = (props: Prop) => {
 
   return (
-    <MapContainer className = "map-container" center={[51.505, 0]} ref = {props.setMapRef} zoom={15}>
-    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-    {props.tableData.map((stop:Stop)=>
-    
-    <Marker icon={icon}position={new LatLng(stop.latitude,stop.longitude)}>
-    <Popup>
-    <BusStop stop={stop} />
-    </Popup>
-  </Marker>
-    
-    )}
+    <MapContainer className = "map-container" center={[51.505, 0]} ref = {props.setMapRef} zoom={ZOOM_DEFAULT_DISTANCE}>
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      {props.tableData.map((stop:Stop)=>
+      
+      <Marker icon={icon}position={new LatLng(stop.latitude,stop.longitude)}>
+        <Popup>
+          <BusStop stop={stop} />
+        </Popup>
+      </Marker>
+      
+      )}
    
   </MapContainer>
   )
