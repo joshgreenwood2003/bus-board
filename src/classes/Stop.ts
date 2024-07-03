@@ -1,16 +1,9 @@
-import Bus from "./Bus";
-
 export default class Stop {
     public ID: string;
     public latitude: number;
     public longitude: number;
     public name: string;
     public stopLetter: string;
-
-
-
-
-
 
     public constructor(_ID: string, _lat: number, _long: number, _name: string, _stop: string) {
         this.ID = _ID;
