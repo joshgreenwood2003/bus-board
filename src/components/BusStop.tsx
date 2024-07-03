@@ -21,6 +21,7 @@ const BusStop = (prop: Props) => {
 
   useEffect(() => {
     initialiseBusesFromStop();
+     // eslint-disable-next-line
   }, []);
 
   // TODO: Perform a suitable refresh of bus data

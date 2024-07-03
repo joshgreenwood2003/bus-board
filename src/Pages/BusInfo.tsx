@@ -22,6 +22,7 @@ export default function BusInfo(): React.ReactElement {
 
   useEffect(() => {
     initialise();
+     // eslint-disable-next-line
   }, []);
 
 
