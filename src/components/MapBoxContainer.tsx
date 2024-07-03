@@ -19,7 +19,7 @@ const LocationIcon = new Icon({ iconUrl: LOCATION_MARKER_IMAGE, iconSize: [25, 2
 const MapBoxContainer = (props: Prop) => {
 
   return (
-    <MapContainer className = "map-container" center={[51.505, 0]} ref = {props.setMapRef} zoom={ZOOM_DEFAULT_DISTANCE}>
+    <MapContainer className = "map-container" center={[51.505, 0]} ref = {props.setMapRef} zoom={ZOOM_DEFAULT_DISTANCE} zoomControl={false}>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       {props.tableData.map((stop:Stop)=>
       

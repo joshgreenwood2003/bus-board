@@ -82,7 +82,7 @@ async function initialiseBusesFromStop(){
         </div>
         { // only display when on home map
           window.location.pathname === "/" &&
-          <Link className="w-full p-3 bg-slate-600 text-white hover:bg-orange-500 text-center" to={`/BusInfo/${prop.stop.ID}`} style={{color:"white"}}>View More Details</Link>
+          <Link  to={`/BusInfo/${prop.stop.ID}`} style={{color:"white"}}>View More Details</Link>
   }
     </div>
   );
